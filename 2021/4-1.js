@@ -617,61 +617,58 @@ const boardsRaw = `34 90 18 33 83
 85 38 64 63 13
 47 16  8 76 94`;
 
-const drawnNumbers = drawnNumbersRaw.split(',');
-const boards = boardsRaw.split('\n\n').map((table, index) => ({ id: index, numbers: table }));
+const drawnNumbers = drawnNumbersRaw.split(',').map(x => parseFloat(x));
+const boards = boardsRaw.split('\n\n');
 
-const checkRow = (row) => {
-  const drawn = [];
-  for (let i = 0; i < drawnNumbers.length; i += 1) {
-    const number = drawnNumbers[i];
-    drawn.push(number);
-    if (row.every(x => drawn.includes(x))) {
-      return drawn.length
+const checkNumbers = (numbers, dataSet) => {
+  return numbers.every(x => dataSet.includes(x));
+};
+
+const checkBoard = (board, dataSet) => {
+  const lines = [];
+  const rows = [];
+  rows.push(...board.split('\n').map(x => x.split(/\s+/).map(n => parseFloat(n))));
+  for (let i = 0; i < 5; i += 1) {
+    const line = [];
+    rows.forEach((row) => {
+      line.push(row[i])
+    });
+    lines.push(line);
+  }
+
+  const allLines = [...lines, ...rows];
+
+  for (let i = 0; i < allLines.length; i += 1) {
+    if (checkNumbers(allLines[i], dataSet)) {
+      return board;
     }
   }
-  return -1;
 };
 
-const winnerBoards = [];
-let firstBoard = null;
-const checkBoard = (input) => {
-  const rows = input.numbers.split('\n');
-  rows.forEach((row) => {
-    const numbersToWin = checkRow(row.trim().split(/\s+/));
-    if (numbersToWin === -1) return;
-    winnerBoards.push({ ...input, numbersToWin })
-    if (firstBoard === null || numbersToWin < firstBoard.numbersToWin) {
-      // console.log('win', { ...input, numbersToWin });
-      firstBoard = { ...input, numbersToWin };
-    }
-  })
+const checkforBingo = (dataSet) => {
+  for (let i = 0; i < boards.length; i += 1) {
+    const result = checkBoard(boards[i], dataSet);
+    if (result) return result;
+  }
 };
 
-const getResult = () => {
-  boards.forEach((board) => {
-    checkBoard(board);
-  });
-  const allNumbers = []
-  firstBoard.numbers.split('\n').forEach((row) => allNumbers.push(...row.split(/\s+/)));
-  // console.log(firstBoard, allNumbers);
-  let _drawnNumbers = 0;
-  let _undrawnNumbers = 0;
-  let test = 0;
-  const justDrawnNumbers = drawnNumbers.slice(0, (firstBoard.numbersToWin))
-  
-  allNumbers.forEach((number) => {
-    const _number = parseFloat(number);
-    if (!justDrawnNumbers.includes(number)) {
-      _drawnNumbers += _number;
-      test += 1;
-    } else {
-      _undrawnNumbers += 1;
+const checkBoards = () => {
+  for (let i = 0; i < drawnNumbers.length; i += 1) {
+    const winner = checkforBingo(drawnNumbers.slice(0, (i + 1)));
+    if (winner) {
+      return { winner, number: (i + 1) };
     }
-  });
-  console.log(_drawnNumbers, _undrawnNumbers, drawnNumbers[firstBoard.numbersToWin - 1], allNumbers, test);
-  return _drawnNumbers * drawnNumbers[firstBoard.numbersToWin - 1];
+  };
 }
 
-console.log(getResult());
-winnerBoards.sort((a, b) => a.numbersToWin - b.numbersToWin);
-// console.log(winnerBoards);
+
+const getWinner = () => {
+  const winner = checkBoards();
+  const numbers = []
+  numbers.push(...winner.winner.split('\n').map(x => x.split(/\s+/).map(n => parseFloat(n))).flat());
+  const allDrawnNumbers = drawnNumbers.slice(0, winner.number);
+  const sumOfUnmarkedNumbers = numbers.filter(x => !allDrawnNumbers.includes(x)).reduce((a, b) => a + b);
+  console.log(sumOfUnmarkedNumbers * drawnNumbers[winner.number - 1]);
+}
+
+getWinner();
