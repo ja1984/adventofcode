@@ -1015,66 +1015,47 @@ const testInput = `00100
 
 
 const bits = [];
-const fixedInput = testInput.split('\n');
+const fixedInput = input.split('\n');
 
-const findMostCommonNumber = (index, dataSet, commonFallbackValue) => {
-    let one = 0;
-    let zero = 0;
-    dataSet.forEach((row) => {
-      if(parseFloat(row[index]) === 1) {
-        one += 1
-      } else {
-        zero += 1;
-      }
-    })
-    if(zero === one) return commonFallbackValue;
-    return zero > one ? 0 : 1;
+const findMostCommonNumber = (index, dataSet) => {
+  let one = 0;
+  let zero = 0;
+  dataSet.forEach((row) => {
+    if (parseFloat(row[index]) === 1) {
+      one += 1
+    } else {
+      zero += 1;
+    }
+  })
+  if (zero === one) return 1;
+  return zero > one ? 0 : 1;
 };
 
-const findValue = (filter, dataSet, index) => {
-  console.log(filter, dataSet, index);
+const findLeastCommonNumber = (index, dataSet) => {
+  let one = 0;
+  let zero = 0;
+  dataSet.forEach((row) => {
+    if (parseFloat(row[index]) === 1) {
+      one += 1
+    } else {
+      zero += 1;
+    }
+  })
+  if (zero === one) return 0;
+  return zero < one ? 0 : 1;
+};
+
+const findValue = (filter, dataSet, index, func, fallback) => {
   const newDataSet = dataSet.filter(x => x.startsWith(filter));
-  if(newDataSet.length === 1) {
-    return 'done';
+  if (newDataSet.length === 1) {
+    return parseInt(newDataSet[0], 2);
   };
-
-  const test = findMostCommonNumber(index, newDataSet, 1);
-  findValue(`${filter}${test}`, newDataSet, (index +1));
-  
-
-  // if(newDataSet.length === 1) {
-  // 	findValue('', newDataSet);
-  //   return;
-  // } else {
-
-  // }
+  const test = func(index, newDataSet, 1, fallback);
+  return findValue(`${filter}${test}`, newDataSet, (index + 1), func, fallback);
 }
-console.log(findValue('', fixedInput, 0))
 
-// fixedInput.forEach((row) => {
-// 	row.split('').forEach((nr, index) => {
-//   	if(bits[index]) {
-//     	bits[index][parseFloat(nr)] += 1;
-//     } else {
-//     	const obj = {1: 0, 0:0};
-//       obj[parseFloat(nr)] = 1;
-//     	bits[index] = obj
-//     }
-//   })
-// });
+  
+  const oxygen = findValue('', fixedInput, 0, findMostCommonNumber, 1);
+  const co2 = findValue('', fixedInput, 0, findLeastCommonNumber, 0);
 
-// let gamma = '';
-// let epsilon = '';
-// bits.forEach((row) => {
-// 	if(row['0'] > row['1']) {
-//   	gamma += '0';
-//     epsilon += '1' ;
-//   } else {
-//   	gamma += '1';
-//     epsilon += '0' ;
-//   }
-// })
-
-// const result = (parseInt(gamma, 2) * parseInt(epsilon, 2))
-// console.log(result);
-
+  console.log(oxygen * co2);
