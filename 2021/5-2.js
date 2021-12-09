@@ -527,6 +527,7 @@ testInput.split('\n').forEach((row) => {
 
 dataPoints.filter(x => (x.x1 === x.x2 || x.y1 === x.y2)).forEach((row) => {
   const isVerticalLine = (row.y1 === row.y2);
+  console.log(row);
 
   // console.log(isVerticalLine, row);
   if (isVerticalLine) {
@@ -554,6 +555,10 @@ dataPoints.filter(x => (x.x1 === x.x2 || x.y1 === x.y2)).forEach((row) => {
       }
     }
   }
+});
+console.log('----------------------')
+dataPoints.filter(x => (x.x1 !== x.x2 && x.y1 !== x.y2)).forEach((row) =>{
+console.log(row);
 });
 
 console.log(points.filter(x => x.hits > 1).length);
