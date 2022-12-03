@@ -2525,7 +2525,6 @@ const getLoosingHand = (hand) => {
 }
 
 const getMyMove = (hands) => {
-  console.log(hands);
   if(hands[1] === 'Y') return [hands[0], hands[0]];
   if(hands[1] === 'X') return [hands[0], getLoosingHand(hands[0])];
   if(hands[1] === 'Z') return [hands[0], getWinningHand(hands[0])];
