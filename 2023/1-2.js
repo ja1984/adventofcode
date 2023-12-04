@@ -10,7 +10,6 @@ const replaceWithDigits = (str) => {
   .replaceAll('seven', 'seven7seven')
   .replaceAll('eight', 'eight8height')
   .replaceAll('nine', 'nine9nine')
-  console.log(newStr);
   return newStr;
 }
 
